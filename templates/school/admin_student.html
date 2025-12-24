@@ -1,0 +1,58 @@
+{% extends 'school/adminbase.html' %}
+{% block content %}
+
+<head>
+  <style>
+    .bg-thistle {
+      background-image: linear-gradient(to right, rgb(197, 145, 197), rgb(220, 189, 220));
+    }
+    .text-lightdark { color: rgb(68, 65, 65) !important; }
+  </style>
+</head>
+
+<body style="background-color: #f4f7fc;">
+  <h3 class="text-dark ms-2">Student Overview</h3>
+  <div class="container py-5">
+    <div class="row">
+
+      <!-- View All Students -->
+      <div class="col-md-6 mb-6">
+        <a href="/admin-view-student" class="text-decoration-none">
+          <div class="card text-lightdark bg-thistle shadow">
+            <div class="card-body text-center">
+              <h5 class="card-title">View All Students</h5>
+              <i class="fa fa-eye fa-2x"></i>
+            </div>
+          </div>
+        </a>
+      </div>
+
+      <!-- Add Student -->
+      <div class="col-md-6 mb-6">
+        <a href="/admin-add-student" class="text-decoration-none">
+          <div class="card text-lightdark bg-thistle shadow">
+            <div class="card-body text-center">
+              <h5 class="card-title">Add Student</h5>
+              <i class="fa fa-plus-circle fa-2x"></i>
+            </div>
+          </div>
+        </a>
+      </div>
+
+      <!-- View Fees (NEW CARD) -->
+      <div class="col-md-6 mb-6 mt-4">
+        <a href="{% url 'select-student' %}" class="text-decoration-none">
+          <div class="card text-lightdark bg-thistle shadow">
+            <div class="card-body text-center">
+              <h5 class="card-title">View Student Fee Records</h5>
+              <i class="fa-solid fa-indian-rupee-sign fa-2x"></i>
+            </div>
+          </div>
+        </a>
+      </div>
+
+    </div>
+  </div>
+</body>
+
+{% endblock content %}

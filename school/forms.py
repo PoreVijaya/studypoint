@@ -1,0 +1,140 @@
+from django import forms
+from django.contrib.auth.models import User
+from . import models
+
+# ---------------------------------------------------
+# ADMIN SIGNUP FORM
+# ---------------------------------------------------
+class AdminSigupForm(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = ['first_name', 'last_name', 'email', 'username', 'password']
+
+    def clean_username(self):
+        username = self.cleaned_data['username']
+        if User.objects.filter(username=username).exists():
+            raise forms.ValidationError("Username already exists. Please choose a different username.")
+        return username
+
+
+# ---------------------------------------------------
+# STUDENT USER FORM (USER TABLE)
+# ---------------------------------------------------
+class StudentUserForm(forms.ModelForm):
+    password = forms.CharField(
+        widget=forms.PasswordInput(attrs={'class': 'form-control'}),
+        required=True
+    )
+
+    class Meta:
+        model = User
+        fields = ['first_name', 'last_name', 'username', 'password']
+
+    def __init__(self, *args, **kwargs):
+        self.instance = kwargs.get('instance', None)
+        super().__init__(*args, **kwargs)
+
+    def clean_username(self):
+        username = self.cleaned_data.get('username')
+        qs = User.objects.filter(username=username)
+        if self.instance:
+            qs = qs.exclude(pk=self.instance.pk)
+        if qs.exists():
+            raise forms.ValidationError("This username is already taken.")
+        return username
+
+
+# ---------------------------------------------------
+# STUDENT EXTRA FORM (ONLY EXTRA DATA)
+# ---------------------------------------------------
+class StudentExtraForm(forms.ModelForm):
+    payment_date = forms.DateField(
+        required=False,
+        widget=forms.DateInput(attrs={'type': 'date', 'class': 'form-control'})
+    )
+
+    class Meta:
+        model = models.StudentExtra
+        # Add profile_pic and vehicle_number
+        fields = ['mobile', 'payment_date', 'profile_pic', 'vehicle_number']
+        widgets = {
+            'mobile': forms.TextInput(attrs={'class': 'form-control'}),
+            'vehicle_number': forms.TextInput(attrs={'class': 'form-control'}),
+        }
+
+    # Optional: customize profile_pic input (optional, uses default FileInput)
+    profile_pic = forms.ImageField(
+        required=False,
+        widget=forms.ClearableFileInput(attrs={'class': 'form-control'})
+    )
+
+
+# ---------------------------------------------------
+# NOTICE FORM
+# ---------------------------------------------------
+class NoticeForm(forms.ModelForm):
+    message = forms.CharField(
+        widget=forms.Textarea(attrs={
+            'rows': 4,
+            'class': 'form-control',
+        }),
+        required=True
+    )
+
+    expiration_date = forms.DateField(
+        widget=forms.DateInput(attrs={
+            'type': 'date',
+            'class': 'form-control'
+        }),
+        required=True
+    )
+
+    class Meta:
+        model = models.Notice
+        fields = ['message', 'expiration_date']
+
+
+# ---------------------------------------------------
+# STUDENT SELECT FORM (Select a User instead of Student)
+# ---------------------------------------------------
+class StudentSelectForm(forms.Form):
+    student = forms.ModelChoiceField(
+        queryset=models.StudentExtra.objects.all(),
+        empty_label="Choose student",
+        widget=forms.Select(attrs={"class": "form-select"})
+    )
+
+
+# ---------------------------------------------------
+# MONTHLY FEE FORM
+# ---------------------------------------------------
+class MonthlyFeeForm(forms.ModelForm):
+    class Meta:
+        model = models.StudentMonthlyRecord
+        fields = [
+            'month',
+            'start_date',
+            'end_date',
+            'facility',
+            'payment_method',
+            'fee',
+            'paid_fees',
+        ]
+        widgets = {
+            'month': forms.TextInput(attrs={'class': 'form-control'}),
+            'start_date': forms.DateInput(attrs={
+                'type': 'date',
+                'class': 'form-control'
+            }),
+            'end_date': forms.DateInput(attrs={
+                'type': 'date',
+                'class': 'form-control'
+            }),
+
+            # ✅ DROPDOWNS
+            'facility': forms.Select(attrs={'class': 'form-select'}),
+            'payment_method': forms.Select(attrs={'class': 'form-select'}),
+
+            'fee': forms.NumberInput(attrs={'class': 'form-control'}),
+            'paid_fees': forms.NumberInput(attrs={'class': 'form-control'}),
+        }
