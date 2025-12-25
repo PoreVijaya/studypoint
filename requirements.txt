@@ -1,9 +1,17 @@
 Django>=4.2,<6.0
+
+# MySQL
 mysqlclient==2.2.7
 PyMySQL==1.1.1
-django-widget-tweaks==1.5.0
+dj-database-url==2.1.0
+
+# Media / Images
 Pillow>=10.0.0
+
+# Templates
+django-widget-tweaks==1.5.0
+
+# Production server
 gunicorn
-cloudinary
-django-cloudinary-storage
+
 
