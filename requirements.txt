@@ -5,6 +5,8 @@ Pillow
 django-widget-tweaks
 whitenoise
 python-dotenv
+mysqlclient>=2.2.1
+
 
 
 
