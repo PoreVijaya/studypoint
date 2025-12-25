@@ -1,5 +1,6 @@
 import os
 from pathlib import Path
+import dj_database_url
 
 # --------------------------------------------------
 # BASE DIR
@@ -8,6 +9,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 TEMPLATE_DIR = BASE_DIR / "templates"
 STATIC_DIR = BASE_DIR / "static"
+MEDIA_DIR = BASE_DIR / "media"
 
 # --------------------------------------------------
 # SECURITY
@@ -44,12 +46,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
 
-    # THIRD PARTY
     "widget_tweaks",
-    "cloudinary",
-    "cloudinary_storage",
-
-    # LOCAL
     "school",
 ]
 
@@ -92,20 +89,17 @@ TEMPLATES = [
 ]
 
 # --------------------------------------------------
-# DATABASE (Railway MySQL)
+# DATABASE (Railway MySQL – SAFE)
 # --------------------------------------------------
 DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.mysql",
-        "NAME": os.environ.get("MYSQLDATABASE", "railway"),
-        "USER": os.environ.get("MYSQLUSER", "root"),
-        "PASSWORD": os.environ.get("MYSQLPASSWORD"),
-        "HOST": os.environ.get("MYSQLHOST"),
-        "PORT": os.environ.get("MYSQLPORT", "3306"),
-        "OPTIONS": {
-            "charset": "utf8mb4",
-        },
-    }
+    "default": dj_database_url.config(
+        default=os.environ.get(
+            "DATABASE_URL",
+            "mysql://root:ObfUGxkkpdFraAqCeOYSYxFZRALnSJoO@mysql.railway.internal:3306/railway"
+        ),
+        conn_max_age=600,
+        ssl_require=False,
+    )
 }
 
 # --------------------------------------------------
@@ -133,22 +127,16 @@ STATIC_URL = "/static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
 # --------------------------------------------------
-# MEDIA FILES (CLOUDINARY)
+# MEDIA FILES (IMPORTANT)
 # --------------------------------------------------
-CLOUDINARY_STORAGE = {
-    "CLOUD_NAME": os.environ.get("CLOUDINARY_CLOUD_NAME"),
-    "API_KEY": os.environ.get("CLOUDINARY_API_KEY"),
-    "API_SECRET": os.environ.get("CLOUDINARY_API_SECRET"),
-}
-
-DEFAULT_FILE_STORAGE = "cloudinary_storage.storage.MediaCloudinaryStorage"
-
-MEDIA_URL = "/media/"  # Only for compatibility
+MEDIA_URL = "/media/"
+MEDIA_ROOT = MEDIA_DIR
 
 # --------------------------------------------------
 # LOGIN
 # --------------------------------------------------
 LOGIN_REDIRECT_URL = "/afterlogin"
+LOGOUT_REDIRECT_URL = "/"
 
 # --------------------------------------------------
 # DEFAULT FIELD
