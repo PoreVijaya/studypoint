@@ -1,17 +1,34 @@
 from pathlib import Path
 import os
 
+# ==================================================
+# BASE DIR
+# ==================================================
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# ==================================================
+# SECURITY
+# ==================================================
 SECRET_KEY = os.getenv("SECRET_KEY", "unsafe-secret-key")
 
-DEBUG = True
+DEBUG = os.getenv("DEBUG", "False") == "True"
 
-ALLOWED_HOSTS = ["*"]
+ALLOWED_HOSTS = [
+    ".railway.app",
+    "localhost",
+    "127.0.0.1",
+]
 
-# =============================
-# INSTALLED APPS
-# =============================
+CSRF_TRUSTED_ORIGINS = [
+    "https://*.railway.app",
+]
+
+CSRF_COOKIE_SECURE = True
+SESSION_COOKIE_SECURE = True
+
+# ==================================================
+# APPLICATIONS
+# ==================================================
 INSTALLED_APPS = [
     "django.contrib.admin",
     "django.contrib.auth",
@@ -27,9 +44,9 @@ INSTALLED_APPS = [
     "school",
 ]
 
-# =============================
+# ==================================================
 # MIDDLEWARE
-# =============================
+# ==================================================
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
@@ -41,8 +58,15 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
+# ==================================================
+# URLS / WSGI
+# ==================================================
 ROOT_URLCONF = "project.urls"
+WSGI_APPLICATION = "project.wsgi.application"
 
+# ==================================================
+# TEMPLATES
+# ==================================================
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
@@ -59,11 +83,9 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = "project.wsgi.application"
-
-# =============================
-# DATABASE (Railway MySQL)
-# =============================
+# ==================================================
+# DATABASE (Railway MySQL + PyMySQL)
+# ==================================================
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.mysql",
@@ -73,14 +95,14 @@ DATABASES = {
         "HOST": os.getenv("MYSQLHOST"),
         "PORT": os.getenv("MYSQLPORT", "3306"),
         "OPTIONS": {
-            "init_command": "SET sql_mode='STRICT_TRANS_TABLES'",
+            "charset": "utf8mb4",
         },
     }
 }
 
-# =============================
+# ==================================================
 # PASSWORD VALIDATION
-# =============================
+# ==================================================
 AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},
     {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator"},
@@ -88,26 +110,31 @@ AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator"},
 ]
 
+# ==================================================
+# INTERNATIONALIZATION
+# ==================================================
 LANGUAGE_CODE = "en-us"
 TIME_ZONE = "Asia/Kolkata"
 USE_I18N = True
 USE_TZ = True
 
-# =============================
+# ==================================================
 # STATIC FILES
-# =============================
+# ==================================================
 STATIC_URL = "/static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
-STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+STATICFILES_STORAGE = (
+    "whitenoise.storage.CompressedManifestStaticFilesStorage"
+)
 
-# =============================
-# MEDIA FILES (IMAGES FIX)
-# =============================
+# ==================================================
+# MEDIA FILES (IMPORTANT FOR IMAGES)
+# ==================================================
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
 
-# =============================
-# DEFAULT
-# =============================
+# ==================================================
+# DEFAULT FIELD
+# ==================================================
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
