@@ -1,10 +1,10 @@
-Django>=5.0,<5.1
+Django>=4.2
 gunicorn
-whitenoise
 mysqlclient
 PyMySQL
 Pillow
 django-widget-tweaks
+whitenoise
 
 
 
