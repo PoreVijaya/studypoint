@@ -138,3 +138,31 @@ class MonthlyFeeForm(forms.ModelForm):
             'fee': forms.NumberInput(attrs={'class': 'form-control'}),
             'paid_fees': forms.NumberInput(attrs={'class': 'form-control'}),
         }
+
+
+# school/forms.py
+# from django import forms
+# from .models import Expense
+
+# class ExpenseForm(forms.ModelForm):
+#     class Meta:
+#         model = Expense
+#         fields = ['category', 'amount', 'date', 'description']
+#         widgets = {
+#             'date': forms.DateInput(attrs={'type': 'date'}),
+#         }
+
+
+
+# school/forms.py
+from django import forms
+from .models import Expense, ExpenseCategory
+
+class ExpenseForm(forms.ModelForm):
+    class Meta:
+        model = Expense
+        fields = ['category', 'amount', 'date', 'description']  
+        widgets = {
+            'date': forms.DateInput(attrs={'type': 'date'}),
+            'category': forms.Select(choices=ExpenseCategory.choices)
+        }
