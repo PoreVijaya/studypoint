@@ -1,9 +1,10 @@
 from django.contrib import admin
 from django.urls import path
-from school import views
-from django.contrib.auth.views import LoginView, LogoutView
+from django.conf import settings
+from django.conf.urls.static import static
 
 urlpatterns = [
+    path("admin/", admin.site.urls),
     path('admin/', admin.site.urls),
     path('',views.home_view,name=''),
     
@@ -49,10 +50,6 @@ urlpatterns = [
     path('expenses/delete/<int:expense_id>/', views.delete_expense_view, name='delete_expense'),
 
 ]
-
-
-from django.conf import settings
-from django.conf.urls.static import static
 
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
