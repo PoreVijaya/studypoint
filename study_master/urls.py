@@ -19,7 +19,6 @@ urlpatterns = [
     path('logout/', views.logout_view, name='logout'),
     path('admin-dashboard', views.admin_dashboard_view,name='admin-dashboard'),
     
-    
     path('admin-student', views.admin_student_view,name='admin-student'),
     path('admin-add-student', views.admin_add_student_view,name='admin-add-student'),
     path('admin-view-student', views.admin_view_student_view,name='admin-view-student'),
@@ -42,6 +41,12 @@ urlpatterns = [
     path('select-student/', views.select_student, name='select-student'),
     path('student/<int:student_id>/fees/', views.student_fee_list, name='student-fee-list'),
     path('student/<int:student_id>/add-fee-record/', views.add_fee_record, name='add-fee-record'),
+    
+    
+    path('add-expense/', views.add_expense_view, name='add_expense'),
+    path('expenses/', views.expenses_dashboard_view, name='expense_dashboard'),
+    path('expenses/list/', views.expense_list_view, name='expense_list'),
+    path('expenses/delete/<int:expense_id>/', views.delete_expense_view, name='delete_expense'),
 
 ]
 
