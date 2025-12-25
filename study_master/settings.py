@@ -1,6 +1,8 @@
 import os
 from pathlib import Path
-import dj_database_url
+import pymysql
+
+pymysql.install_as_MySQLdb()
 
 # --------------------------------------------------
 # BASE DIR
@@ -8,15 +10,13 @@ import dj_database_url
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 TEMPLATE_DIR = BASE_DIR / "templates"
-STATIC_DIR = BASE_DIR / "static"
-MEDIA_DIR = BASE_DIR / "media"
 
 # --------------------------------------------------
 # SECURITY
 # --------------------------------------------------
 SECRET_KEY = os.environ.get(
     "SECRET_KEY",
-    "k0ujs9pcw+7qohwas!o7_ept20$c@$)-b=qco8sgviy_f)((bc"
+    "django-insecure-change-this-in-prod"
 )
 
 DEBUG = os.environ.get("DEBUG", "False") == "True"
@@ -45,6 +45,9 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+
+    "cloudinary",
+    "cloudinary_storage",
 
     "widget_tweaks",
     "school",
@@ -89,17 +92,20 @@ TEMPLATES = [
 ]
 
 # --------------------------------------------------
-# DATABASE (Railway MySQL – SAFE)
+# DATABASE (Railway MySQL)
 # --------------------------------------------------
 DATABASES = {
-    "default": dj_database_url.config(
-        default=os.environ.get(
-            "DATABASE_URL",
-            "mysql://root:ObfUGxkkpdFraAqCeOYSYxFZRALnSJoO@mysql.railway.internal:3306/railway"
-        ),
-        conn_max_age=600,
-        ssl_require=False,
-    )
+    "default": {
+        "ENGINE": "django.db.backends.mysql",
+        "NAME": os.environ.get("MYSQLDATABASE", "railway"),
+        "USER": os.environ.get("MYSQLUSER", "root"),
+        "PASSWORD": os.environ.get("MYSQLPASSWORD"),
+        "HOST": os.environ.get("MYSQLHOST"),
+        "PORT": os.environ.get("MYSQLPORT", "3306"),
+        "OPTIONS": {
+            "charset": "utf8mb4",
+        },
+    }
 }
 
 # --------------------------------------------------
@@ -127,16 +133,20 @@ STATIC_URL = "/static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
 # --------------------------------------------------
-# MEDIA FILES (IMPORTANT)
+# MEDIA FILES (CLOUDINARY)
 # --------------------------------------------------
-MEDIA_URL = "/media/"
-MEDIA_ROOT = MEDIA_DIR
+DEFAULT_FILE_STORAGE = "cloudinary_storage.storage.MediaCloudinaryStorage"
+
+CLOUDINARY_STORAGE = {
+    "CLOUD_NAME": os.environ.get("CLOUDINARY_CLOUD_NAME"),
+    "API_KEY": os.environ.get("CLOUDINARY_API_KEY"),
+    "API_SECRET": os.environ.get("CLOUDINARY_API_SECRET"),
+}
 
 # --------------------------------------------------
 # LOGIN
 # --------------------------------------------------
 LOGIN_REDIRECT_URL = "/afterlogin"
-LOGOUT_REDIRECT_URL = "/"
 
 # --------------------------------------------------
 # DEFAULT FIELD
