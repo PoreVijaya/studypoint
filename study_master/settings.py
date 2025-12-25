@@ -1,42 +1,27 @@
 import os
 from pathlib import Path
-import pymysql
-
-pymysql.install_as_MySQLdb()
 
 # --------------------------------------------------
 # BASE DIR
 # --------------------------------------------------
 BASE_DIR = Path(__file__).resolve().parent.parent
-
 TEMPLATE_DIR = BASE_DIR / "templates"
 
 # --------------------------------------------------
 # SECURITY
 # --------------------------------------------------
-SECRET_KEY = os.environ.get(
-    "SECRET_KEY",
-    "django-insecure-change-this-in-prod"
-)
-
+SECRET_KEY = os.environ.get("SECRET_KEY", "unsafe-secret-key")
 DEBUG = os.environ.get("DEBUG", "False") == "True"
 
-ALLOWED_HOSTS = [
-    ".railway.app",
-    "localhost",
-    "127.0.0.1",
-]
+ALLOWED_HOSTS = [".railway.app", "localhost", "127.0.0.1"]
 
-CSRF_TRUSTED_ORIGINS = [
-    "https://*.railway.app",
-]
-
+CSRF_TRUSTED_ORIGINS = ["https://*.railway.app"]
 CSRF_COOKIE_SECURE = True
 SESSION_COOKIE_SECURE = True
 CSRF_COOKIE_SAMESITE = "Lax"
 
 # --------------------------------------------------
-# APPLICATIONS
+# APPS
 # --------------------------------------------------
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -92,48 +77,28 @@ TEMPLATES = [
 ]
 
 # --------------------------------------------------
-# DATABASE (Railway MySQL)
+# DATABASE (PyMySQL ONLY)
 # --------------------------------------------------
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.mysql",
-        "NAME": os.environ.get("MYSQLDATABASE", "railway"),
-        "USER": os.environ.get("MYSQLUSER", "root"),
+        "NAME": os.environ.get("MYSQLDATABASE"),
+        "USER": os.environ.get("MYSQLUSER"),
         "PASSWORD": os.environ.get("MYSQLPASSWORD"),
         "HOST": os.environ.get("MYSQLHOST"),
         "PORT": os.environ.get("MYSQLPORT", "3306"),
-        "OPTIONS": {
-            "charset": "utf8mb4",
-        },
+        "OPTIONS": {"charset": "utf8mb4"},
     }
 }
 
 # --------------------------------------------------
-# PASSWORD VALIDATION
-# --------------------------------------------------
-AUTH_PASSWORD_VALIDATORS = [
-    {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},
-    {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator"},
-    {"NAME": "django.contrib.auth.password_validation.CommonPasswordValidator"},
-    {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator"},
-]
-
-# --------------------------------------------------
-# INTERNATIONALIZATION
-# --------------------------------------------------
-LANGUAGE_CODE = "en-us"
-TIME_ZONE = "UTC"
-USE_I18N = True
-USE_TZ = True
-
-# --------------------------------------------------
-# STATIC FILES
+# STATIC
 # --------------------------------------------------
 STATIC_URL = "/static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
 # --------------------------------------------------
-# MEDIA FILES (CLOUDINARY)
+# MEDIA (Cloudinary – REQUIRED FOR RAILWAY)
 # --------------------------------------------------
 DEFAULT_FILE_STORAGE = "cloudinary_storage.storage.MediaCloudinaryStorage"
 
@@ -142,11 +107,6 @@ CLOUDINARY_STORAGE = {
     "API_KEY": os.environ.get("CLOUDINARY_API_KEY"),
     "API_SECRET": os.environ.get("CLOUDINARY_API_SECRET"),
 }
-
-# --------------------------------------------------
-# LOGIN
-# --------------------------------------------------
-LOGIN_REDIRECT_URL = "/afterlogin"
 
 # --------------------------------------------------
 # DEFAULT FIELD
