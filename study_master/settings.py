@@ -1,27 +1,25 @@
-import os
 from pathlib import Path
+import os
 
 # --------------------------------------------------
-# BASE DIR
+# BASE
 # --------------------------------------------------
 BASE_DIR = Path(__file__).resolve().parent.parent
-TEMPLATE_DIR = BASE_DIR / "templates"
 
 # --------------------------------------------------
 # SECURITY
 # --------------------------------------------------
-SECRET_KEY = os.environ.get("SECRET_KEY", "unsafe-secret-key")
+SECRET_KEY = os.environ.get(
+    "SECRET_KEY",
+    "django-insecure-change-this-in-production"
+)
+
 DEBUG = os.environ.get("DEBUG", "False") == "True"
 
-ALLOWED_HOSTS = [".railway.app", "localhost", "127.0.0.1"]
-
-CSRF_TRUSTED_ORIGINS = ["https://*.railway.app"]
-CSRF_COOKIE_SECURE = True
-SESSION_COOKIE_SECURE = True
-CSRF_COOKIE_SAMESITE = "Lax"
+ALLOWED_HOSTS = ["*"]
 
 # --------------------------------------------------
-# APPS
+# APPLICATIONS
 # --------------------------------------------------
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -31,10 +29,10 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
 
-    "cloudinary",
-    "cloudinary_storage",
-
+    # Third-party
     "widget_tweaks",
+
+    # Local apps
     "school",
 ]
 
@@ -43,6 +41,7 @@ INSTALLED_APPS = [
 # --------------------------------------------------
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -52,10 +51,9 @@ MIDDLEWARE = [
 ]
 
 # --------------------------------------------------
-# URL / WSGI
+# URLS
 # --------------------------------------------------
 ROOT_URLCONF = "study_master.urls"
-WSGI_APPLICATION = "study_master.wsgi.application"
 
 # --------------------------------------------------
 # TEMPLATES
@@ -63,7 +61,7 @@ WSGI_APPLICATION = "study_master.wsgi.application"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [TEMPLATE_DIR],
+        "DIRS": [BASE_DIR / "templates"],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -71,44 +69,76 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
+                "django.template.context_processors.media",
             ],
         },
     },
 ]
 
+WSGI_APPLICATION = "study_master.wsgi.application"
+
 # --------------------------------------------------
-# DATABASE (PyMySQL ONLY)
+# DATABASE (MySQL – Railway safe)
 # --------------------------------------------------
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.mysql",
-        "NAME": os.environ.get("MYSQLDATABASE"),
-        "USER": os.environ.get("MYSQLUSER"),
-        "PASSWORD": os.environ.get("MYSQLPASSWORD"),
-        "HOST": os.environ.get("MYSQLHOST"),
+        "NAME": os.environ.get("MYSQLDATABASE", ""),
+        "USER": os.environ.get("MYSQLUSER", ""),
+        "PASSWORD": os.environ.get("MYSQLPASSWORD", ""),
+        "HOST": os.environ.get("MYSQLHOST", "localhost"),
         "PORT": os.environ.get("MYSQLPORT", "3306"),
-        "OPTIONS": {"charset": "utf8mb4"},
+        "OPTIONS": {
+            "charset": "utf8mb4",
+        },
     }
 }
 
 # --------------------------------------------------
-# STATIC
+# PASSWORD VALIDATION
+# --------------------------------------------------
+AUTH_PASSWORD_VALIDATORS = [
+    {
+        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
+    },
+    {
+        "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
+    },
+    {
+        "NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",
+    },
+    {
+        "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
+    },
+]
+
+# --------------------------------------------------
+# INTERNATIONALIZATION
+# --------------------------------------------------
+LANGUAGE_CODE = "en-us"
+
+TIME_ZONE = "Asia/Kolkata"
+
+USE_I18N = True
+USE_TZ = True
+
+# --------------------------------------------------
+# STATIC FILES
 # --------------------------------------------------
 STATIC_URL = "/static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
-# --------------------------------------------------
-# MEDIA (Cloudinary – REQUIRED FOR RAILWAY)
-# --------------------------------------------------
-DEFAULT_FILE_STORAGE = "cloudinary_storage.storage.MediaCloudinaryStorage"
-
-CLOUDINARY_STORAGE = {
-    "CLOUD_NAME": os.environ.get("CLOUDINARY_CLOUD_NAME"),
-    "API_KEY": os.environ.get("CLOUDINARY_API_KEY"),
-    "API_SECRET": os.environ.get("CLOUDINARY_API_SECRET"),
-}
+STATICFILES_STORAGE = (
+    "whitenoise.storage.CompressedManifestStaticFilesStorage"
+)
 
 # --------------------------------------------------
-# DEFAULT FIELD
+# MEDIA FILES (IMAGES)
+# --------------------------------------------------
+MEDIA_URL = "/media/"
+MEDIA_ROOT = BASE_DIR / "media"
+
+# --------------------------------------------------
+# DEFAULT PRIMARY KEY
 # --------------------------------------------------
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
