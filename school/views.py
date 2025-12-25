@@ -118,48 +118,135 @@ def afterlogin_view(request):
             return render(request, 'school/student_wait_for_approval.html')
 
     # Fallback
-    return redirect('login')  # or show an error page
+    return redirect('login')  
 
+
+
+# from django.db.models import Count, Sum, F
+# @login_required(login_url='adminlogin')
+# def admin_dashboard_view(request):
+#     if not request.user.is_authenticated or request.session.get('user_type') != 'admin' or not request.user.groups.filter(name='ADMIN').exists():
+#         return render(request, 'school/index.html')
+
+#     selected_month = request.GET.get('month')
+#     month_filter = {}
+#     if selected_month:
+#         try:
+#             year, month = selected_month.split('-')
+#             month_filter = {'start_date__year': int(year), 'start_date__month': int(month)}
+#         except:
+#             month_filter = {}
+
+#     student_records = StudentMonthlyRecord.objects.all()
+#     if month_filter:
+#         student_records = student_records.filter(**month_filter)
+
+#     # Total fees
+#     total_studentfee = student_records.aggregate(total=Sum('fee'))['total'] or 0
+#     paid_studentfee = student_records.aggregate(total=Sum('paid_fees'))['total'] or 0
+#     pendingstudentfee = total_studentfee - paid_studentfee
+
+#     # Admin stats
+#     admin_stats = (
+#         student_records.filter(collected_by__isnull=False)
+#         .values('collected_by', 'collected_by__first_name', 'collected_by__last_name')
+#         .annotate(
+#             total_students=Count('student_id', distinct=True),
+#             total_fee=Sum('fee'),
+#             total_paid=Sum('paid_fees'),
+#             remaining_amount=Sum(F('fee') - F('paid_fees'))
+#         )
+#     )
+
+#     # Unique student count
+#     unique_student_count = student_records.values('student_id').distinct().count()
+
+#     notice = models.Notice.objects.all()
+
+#     context = {
+#         'studentcount': unique_student_count,   
+#         'pendingstudentcount': 0,               
+#         'studentfee': total_studentfee,
+#         'pendingstudentfee': pendingstudentfee,
+#         'admin_stats': admin_stats,
+#         'selected_month': selected_month,
+#         'notice': notice,
+#     }
+
+#     return render(request, 'school/admin_dashboard.html', context)
+
+
+
+from django.db.models import Count, Sum, F
+from django.contrib.auth.decorators import login_required
+from .models import StudentMonthlyRecord
+from school import models
 
 
 @login_required(login_url='adminlogin')
 def admin_dashboard_view(request):
-    if not request.user.is_authenticated or request.session.get('user_type') != 'admin' or not request.user.groups.filter(name='ADMIN').exists():
+    if (
+        not request.user.is_authenticated
+        or request.session.get('user_type') != 'admin'
+        or not request.user.groups.filter(name='ADMIN').exists()
+    ):
         return render(request, 'school/index.html')
 
+    # 🔹 Month & Year filter (YYYY-MM)
     selected_month = request.GET.get('month')
-    month_filter = {}
+
+    student_records = StudentMonthlyRecord.objects.all()
+
     if selected_month:
         try:
             year, month = selected_month.split('-')
-            month_filter = {'start_date__year': int(year), 'start_date__month': int(month)}
-        except:
-            month_filter = {}
+            student_records = student_records.filter(
+                start_date__year=int(year),
+                start_date__month=int(month)
+            )
+        except ValueError:
+            pass
 
-    student_records = StudentMonthlyRecord.objects.all()
-    if month_filter:
-        student_records = student_records.filter(**month_filter)
+    # 🔹 Total fees
+    total_studentfee = student_records.aggregate(
+        total=Sum('fee')
+    )['total'] or 0
 
-    total_studentfee = student_records.aggregate(total=Sum('fee'))['total'] or 0
-    paid_studentfee = student_records.aggregate(total=Sum('paid_fees'))['total'] or 0
+    paid_studentfee = student_records.aggregate(
+        total=Sum('paid_fees')
+    )['total'] or 0
+
     pendingstudentfee = total_studentfee - paid_studentfee
 
+    # 🔹 Admin-wise stats
     admin_stats = (
-        student_records.filter(collected_by__isnull=False)
-        .values('collected_by', 'collected_by__first_name', 'collected_by__last_name')
+        student_records
+        .filter(collected_by__isnull=False)
+        .values(
+            'collected_by',
+            'collected_by__first_name',
+            'collected_by__last_name'
+        )
         .annotate(
-            total_students=Count('id'),
+            total_students=Count('student_id', distinct=True),
             total_fee=Sum('fee'),
             total_paid=Sum('paid_fees'),
             remaining_amount=Sum(F('fee') - F('paid_fees'))
         )
     )
 
+    # 🔹 Unique student count
+    unique_student_count = (
+        student_records
+        .values('student_id')
+        .distinct()
+        .count()
+    )
+
     notice = models.Notice.objects.all()
 
     context = {
-        'studentcount': student_records.count(),
-        'pendingstudentcount': 0,  # No status field
+        'studentcount': unique_student_count,
         'studentfee': total_studentfee,
         'pendingstudentfee': pendingstudentfee,
         'admin_stats': admin_stats,
@@ -168,7 +255,6 @@ def admin_dashboard_view(request):
     }
 
     return render(request, 'school/admin_dashboard.html', context)
-
 
 
 
@@ -655,3 +741,56 @@ def add_fee_record(request, student_id):
         "form": form,
         "student": student
     })
+
+
+
+from django.shortcuts import render
+from django.contrib.auth.decorators import login_required
+
+@login_required(login_url='adminlogin')
+def expenses_dashboard_view(request):
+    return render(request, 'school/expenses.html')
+
+
+
+
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib.auth.decorators import login_required
+from django.contrib import messages
+
+from .models import Expense, ExpenseCategory
+from .forms import ExpenseForm
+
+
+@login_required(login_url='adminlogin')
+def add_expense_view(request):
+    if request.method == "POST":
+        form = ExpenseForm(request.POST)
+        if form.is_valid():
+            expense = form.save(commit=False)
+            expense.created_by = request.user
+            expense.save()
+            messages.success(request, "Expense added successfully.")
+            return redirect('expense_list')
+    else:
+        form = ExpenseForm()
+
+    return render(request, 'school/add_expense.html', {'form': form})
+
+
+@login_required(login_url='adminlogin')
+def expense_list_view(request):
+    expenses = Expense.objects.all().order_by('-date')
+    return render(request, 'school/expense_list.html', {'expenses': expenses})
+
+
+# ✅ ADD THIS DELETE VIEW
+@login_required(login_url='adminlogin')
+def delete_expense_view(request, expense_id):
+    expense = get_object_or_404(Expense, id=expense_id)
+
+    if request.method == "POST":
+        expense.delete()
+        messages.success(request, "Expense deleted successfully.")
+
+    return redirect('expense_list')
