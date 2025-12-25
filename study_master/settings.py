@@ -8,7 +8,6 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 TEMPLATE_DIR = BASE_DIR / "templates"
 STATIC_DIR = BASE_DIR / "static"
-MEDIA_DIR = BASE_DIR / "media"
 
 # --------------------------------------------------
 # SECURITY
@@ -45,7 +44,12 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
 
+    # THIRD PARTY
     "widget_tweaks",
+    "cloudinary",
+    "cloudinary_storage",
+
+    # LOCAL
     "school",
 ]
 
@@ -95,22 +99,14 @@ DATABASES = {
         "ENGINE": "django.db.backends.mysql",
         "NAME": os.environ.get("MYSQLDATABASE", "railway"),
         "USER": os.environ.get("MYSQLUSER", "root"),
-        "PASSWORD": os.environ.get(
-            "MYSQLPASSWORD",
-            "ObfUGxkkpdFraAqCeOYSYxFZRALnSJoO"
-        ),
-        "HOST": os.environ.get(
-            "MYSQLHOST",
-            "mysql.railway.internal"
-        ),
+        "PASSWORD": os.environ.get("MYSQLPASSWORD"),
+        "HOST": os.environ.get("MYSQLHOST"),
         "PORT": os.environ.get("MYSQLPORT", "3306"),
         "OPTIONS": {
             "charset": "utf8mb4",
         },
     }
 }
-
-
 
 # --------------------------------------------------
 # PASSWORD VALIDATION
@@ -131,13 +127,23 @@ USE_I18N = True
 USE_TZ = True
 
 # --------------------------------------------------
-# STATIC / MEDIA FILES
+# STATIC FILES
 # --------------------------------------------------
 STATIC_URL = "/static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
-MEDIA_URL = "/media/"
-MEDIA_ROOT = MEDIA_DIR
+# --------------------------------------------------
+# MEDIA FILES (CLOUDINARY)
+# --------------------------------------------------
+CLOUDINARY_STORAGE = {
+    "CLOUD_NAME": os.environ.get("CLOUDINARY_CLOUD_NAME"),
+    "API_KEY": os.environ.get("CLOUDINARY_API_KEY"),
+    "API_SECRET": os.environ.get("CLOUDINARY_API_SECRET"),
+}
+
+DEFAULT_FILE_STORAGE = "cloudinary_storage.storage.MediaCloudinaryStorage"
+
+MEDIA_URL = "/media/"  # Only for compatibility
 
 # --------------------------------------------------
 # LOGIN
