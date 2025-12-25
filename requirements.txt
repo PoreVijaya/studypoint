@@ -3,3 +3,4 @@ mysqlclient==2.2.7
 PyMySQL==1.1.1
 django-widget-tweaks==1.5.0
 gunicorn
+Pillow>=10.0.0
