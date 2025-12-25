@@ -119,3 +119,33 @@ class StudentMonthlyRecord(models.Model):
     def save(self, *args, **kwargs):
         self.remaining_fee = self.fee - self.paid_fees
         super().save(*args, **kwargs)
+
+
+
+
+from django.db import models
+
+class ExpenseCategory(models.TextChoices):
+    ELECTRICITY = "Electricity Bill", "Electricity Bill"
+    CLEANING = "Cleaning Charges", "Cleaning Charges"
+    WATER = "Water Bill", "Water Bill"
+    INTERNET = "Internet Charges", "Internet Charges"
+    RENT = "Rent", "Rent"
+    REPEARING = "REPEARING", "Reparing"
+    SALARY = "Salary", "Salary"
+    
+
+
+class Expense(models.Model):
+    category = models.CharField(
+        max_length=100,
+        choices=ExpenseCategory.choices,
+        default=ExpenseCategory.ELECTRICITY
+    )
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    date = models.DateField()
+    description = models.TextField(blank=True, null=True)
+    created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+
+    def __str__(self):
+        return f"{self.category} - {self.amount}"
