@@ -108,6 +108,7 @@
       justify-content: center;
       align-items: center;
     }
+    
 
   </style>
 </head>
@@ -153,26 +154,20 @@
         <li class="nav-item">
           <a href="/admin-dashboard" class="nav-link fw-semibold"><i class="fas fa-desktop"></i> <span>Dashboard</span></a>
         </li>
-        <!-- <li class="nav-item">
-          <a href="/admin-teacher" class="nav-link fw-semibold"><i class="fas fa-chalkboard-teacher"></i> <span>Teacher</span></a>
-        </li> -->
         <li class="nav-item">
           <a href="/admin-student" class="nav-link fw-semibold"><i class="fas fa-user-graduate"></i> <span>Student</span></a>
         </li>
-        <!-- <li class="nav-item">
-          <a href="/admin-attendance" class="nav-link fw-semibold"><i class="fas fa-address-card"></i> <span>Attendance</span></a>
-        </li> -->
-        <!-- <li class="nav-item">
-          <a href="/admin-fee" class="nav-link fw-semibold"><i class="fas fa-dollar-sign"></i> <span>Fee</span></a>
-        </li> -->
+
+         <li class="nav-item">
+          <a href="{% url 'expense_dashboard' %}" class="nav-link fw-semibold">
+            <i class="fas fa-money-bill-wave"></i> <span>Expenses</span>
+          </a>
+        </li>
+
         <li class="nav-item">
           <a href="/admin-notice" class="nav-link fw-semibold"><i class="fas fa-bullhorn"></i> <span>Notice</span></a>
         </li>
       </ul>
-
-      <div class="mt-auto d-flex justify-content-center">
-        <a href="/logout" class="btn btn-sm btn-danger logout-btn" onclick="confirmLogout(event)">Logout</a>
-      </div>
 
     </div>
 
