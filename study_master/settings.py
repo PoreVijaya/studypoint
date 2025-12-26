@@ -87,16 +87,15 @@ TEMPLATES = [
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.mysql",
-        "NAME": os.getenv("MYSQLDATABASE"),
-        "USER": os.getenv("MYSQLUSER"),
-        "PASSWORD": os.getenv("MYSQLPASSWORD"),
-        "HOST": os.getenv("MYSQLHOST"),  # e.g., mysql.railway.internal
+        "NAME": os.getenv("MYSQLDATABASE", "railway"),
+        "USER": os.getenv("MYSQLUSER", "root"),
+        "PASSWORD": os.getenv("MYSQLPASSWORD", ""),
+        "HOST": os.getenv("MYSQLHOST", "mysql.railway.internal"),
         "PORT": os.getenv("MYSQLPORT", "3306"),
-        "OPTIONS": {
-            "charset": "utf8mb4",
-        },
+        "OPTIONS": {"charset": "utf8mb4"},
     }
 }
+
 
 # ==================================================
 # PASSWORD VALIDATION
