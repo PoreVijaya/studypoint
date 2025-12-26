@@ -1,5 +1,6 @@
 from pathlib import Path
 import os
+import dj_database_url  # pip install dj-database-url
 
 # ==================================================
 # BASE DIR
@@ -13,11 +14,12 @@ STATIC_DIR = BASE_DIR / "static"
 # SECURITY
 # ==================================================
 SECRET_KEY = os.getenv("SECRET_KEY", "unsafe-secret-key-change-this")
-
 DEBUG = os.getenv("DEBUG", "False") == "True"
 
 ALLOWED_HOSTS = [
     ".railway.app",
+    "localhost",
+    "127.0.0.1",
 ]
 
 CSRF_TRUSTED_ORIGINS = [
@@ -82,20 +84,30 @@ TEMPLATES = [
 ]
 
 # ==================================================
-# DATABASE (RAILWAY ONLY)
+# DATABASE (RAILWAY + LOCAL)
 # ==================================================
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.mysql",
-        "NAME": os.getenv("MYSQLDATABASE", "railway"),
-        "USER": os.getenv("MYSQLUSER", "root"),
-        "PASSWORD": os.getenv("MYSQLPASSWORD", ""),
-        "HOST": os.getenv("MYSQLHOST", "mysql.railway.internal"),
-        "PORT": os.getenv("MYSQLPORT", "3306"),
-        "OPTIONS": {"charset": "utf8mb4"},
+if os.getenv("RAILWAY_ENVIRONMENT"):
+    # Railway MySQL using full URL
+    DATABASE_URL = os.getenv(
+        "CLEARDB_DATABASE_URL",
+        "mysql://root:ObfUGxkkpdFraAqCeOYSYxFZRALnSJoO@mysql.railway.internal:3306/railway"
+    )
+    DATABASES = {
+        "default": dj_database_url.parse(DATABASE_URL, conn_max_age=600, ssl_require=False)
     }
-}
-
+else:
+    # Local MySQL fallback
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.mysql",
+            "NAME": "db_new",
+            "USER": "root",
+            "PASSWORD": "6423",
+            "HOST": "127.0.0.1",
+            "PORT": "3306",
+            "OPTIONS": {"charset": "utf8mb4"},
+        }
+    }
 
 # ==================================================
 # PASSWORD VALIDATION
