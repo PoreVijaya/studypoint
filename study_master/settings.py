@@ -6,10 +6,16 @@ import os
 # ==================================================
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+TEMPLATE_DIR = BASE_DIR / "templates"
+STATIC_DIR = BASE_DIR / "static"
+
 # ==================================================
 # SECURITY
 # ==================================================
-SECRET_KEY = os.getenv("SECRET_KEY", "unsafe-secret-key")
+SECRET_KEY = os.getenv(
+    "SECRET_KEY",
+    "unsafe-secret-key-change-this"
+)
 
 DEBUG = os.getenv("DEBUG", "False") == "True"
 
@@ -37,10 +43,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
 
-    # third-party
     "widget_tweaks",
-
-    # local apps
     "school",
 ]
 
@@ -70,7 +73,7 @@ WSGI_APPLICATION = "study_master.wsgi.application"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [BASE_DIR / "templates"],
+        "DIRS": [TEMPLATE_DIR],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -86,19 +89,36 @@ TEMPLATES = [
 # ==================================================
 # DATABASE (LOCAL + RAILWAY SAFE)
 # ==================================================
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.mysql",
-        "NAME": os.getenv("MYSQLDATABASE", "db_new"),
-        "USER": os.getenv("MYSQLUSER", "root"),
-        "PASSWORD": os.getenv("MYSQLPASSWORD", "6423"),
-        "HOST": os.getenv("MYSQLHOST", "localhost"),
-        "PORT": os.getenv("MYSQLPORT", "3306"),
-        "OPTIONS": {
-            "charset": "utf8mb4",
-        },
+if os.getenv("RAILWAY_ENVIRONMENT"):
+    # ✅ Railway MySQL (TCP connection)
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.mysql",
+            "NAME": os.getenv("MYSQLDATABASE"),
+            "USER": os.getenv("MYSQLUSER"),
+            "PASSWORD": os.getenv("MYSQLPASSWORD"),
+            "HOST": os.getenv("MYSQLHOST"),  # mysql.railway.internal
+            "PORT": os.getenv("MYSQLPORT", "3306"),
+            "OPTIONS": {
+                "charset": "utf8mb4",
+            },
+        }
     }
-}
+else:
+    # ✅ Local MySQL (NO socket)
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.mysql",
+            "NAME": "db_new",
+            "USER": "root",
+            "PASSWORD": "6423",
+            "HOST": "127.0.0.1",  # 🔥 important
+            "PORT": "3306",
+            "OPTIONS": {
+                "charset": "utf8mb4",
+            },
+        }
+    }
 
 # ==================================================
 # PASSWORD VALIDATION
@@ -123,6 +143,7 @@ USE_TZ = True
 # ==================================================
 STATIC_URL = "/static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
+STATICFILES_DIRS = [STATIC_DIR]
 
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
@@ -131,6 +152,25 @@ STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 # ==================================================
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
+
+# ==================================================
+# LOGIN
+# ==================================================
+LOGIN_REDIRECT_URL = "/afterlogin"
+
+# ==================================================
+# EMAIL (USE ENV VARIABLES)
+# ==================================================
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST = "smtp.gmail.com"
+EMAIL_USE_TLS = True
+EMAIL_PORT = 587
+EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER")
+EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")
+EMAIL_RECEIVING_USER = os.getenv(
+    "EMAIL_RECEIVING_USER",
+    ""
+).split(",")
 
 # ==================================================
 # DEFAULT FIELD
