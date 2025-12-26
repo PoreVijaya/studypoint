@@ -23,8 +23,8 @@ CSRF_TRUSTED_ORIGINS = [
     "https://*.railway.app",
 ]
 
-CSRF_COOKIE_SECURE = True
-SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = not DEBUG
+SESSION_COOKIE_SECURE = not DEBUG
 
 # ==================================================
 # APPLICATIONS
@@ -84,15 +84,15 @@ TEMPLATES = [
 ]
 
 # ==================================================
-# DATABASE (Railway MySQL)
+# DATABASE (LOCAL + RAILWAY SAFE)
 # ==================================================
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.mysql",
-        "NAME": os.getenv("MYSQLDATABASE"),
-        "USER": os.getenv("MYSQLUSER"),
-        "PASSWORD": os.getenv("MYSQLPASSWORD"),
-        "HOST": os.getenv("MYSQLHOST"),
+        "NAME": os.getenv("MYSQLDATABASE", "db_new"),
+        "USER": os.getenv("MYSQLUSER", "root"),
+        "PASSWORD": os.getenv("MYSQLPASSWORD", "6423"),
+        "HOST": os.getenv("MYSQLHOST", "localhost"),
         "PORT": os.getenv("MYSQLPORT", "3306"),
         "OPTIONS": {
             "charset": "utf8mb4",
