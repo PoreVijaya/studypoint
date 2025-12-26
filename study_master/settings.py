@@ -40,7 +40,7 @@ INSTALLED_APPS = [
     # third-party
     "widget_tweaks",
 
-    # local
+    # local apps
     "school",
 ]
 
@@ -84,22 +84,21 @@ TEMPLATES = [
 ]
 
 # ==================================================
-# DATABASE (Railway MySQL + PyMySQL)
+# DATABASE (Railway MySQL)
 # ==================================================
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.mysql",
-        "NAME": os.getenv("MYSQLDATABASE") or os.getenv("DB_NAME"),
-        "USER": os.getenv("MYSQLUSER") or os.getenv("DB_USER"),
-        "PASSWORD": os.getenv("MYSQLPASSWORD") or os.getenv("DB_PASSWORD"),
-        "HOST": os.getenv("MYSQLHOST") or os.getenv("DB_HOST"),
-        "PORT": os.getenv("MYSQLPORT") or os.getenv("DB_PORT", "3306"),
+        "NAME": os.getenv("MYSQLDATABASE"),
+        "USER": os.getenv("MYSQLUSER"),
+        "PASSWORD": os.getenv("MYSQLPASSWORD"),
+        "HOST": os.getenv("MYSQLHOST"),
+        "PORT": os.getenv("MYSQLPORT", "3306"),
         "OPTIONS": {
             "charset": "utf8mb4",
         },
     }
 }
-
 
 # ==================================================
 # PASSWORD VALIDATION
@@ -125,12 +124,10 @@ USE_TZ = True
 STATIC_URL = "/static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
-STATICFILES_STORAGE = (
-    "whitenoise.storage.CompressedManifestStaticFilesStorage"
-)
+STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 # ==================================================
-# MEDIA FILES (IMPORTANT FOR IMAGES)
+# MEDIA FILES
 # ==================================================
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
