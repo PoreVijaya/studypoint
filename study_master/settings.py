@@ -12,10 +12,7 @@ STATIC_DIR = BASE_DIR / "static"
 # ==================================================
 # SECURITY
 # ==================================================
-SECRET_KEY = os.getenv(
-    "SECRET_KEY",
-    "unsafe-secret-key-change-this"
-)
+SECRET_KEY = os.getenv("SECRET_KEY", "unsafe-secret-key-change-this")
 
 DEBUG = os.getenv("DEBUG", "False") == "True"
 
@@ -42,7 +39,6 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-
     "widget_tweaks",
     "school",
 ]
@@ -89,36 +85,19 @@ TEMPLATES = [
 # ==================================================
 # DATABASE (LOCAL + RAILWAY SAFE)
 # ==================================================
-if os.getenv("RAILWAY_ENVIRONMENT"):
-    # ✅ Railway MySQL (TCP connection)
-    DATABASES = {
-        "default": {
-            "ENGINE": "django.db.backends.mysql",
-            "NAME": os.getenv("MYSQLDATABASE"),
-            "USER": os.getenv("MYSQLUSER"),
-            "PASSWORD": os.getenv("MYSQLPASSWORD"),
-            "HOST": os.getenv("MYSQLHOST"),  # mysql.railway.internal
-            "PORT": os.getenv("MYSQLPORT", "3306"),
-            "OPTIONS": {
-                "charset": "utf8mb4",
-            },
-        }
+DATABASES = {
+    "default": {
+        "ENGINE": "django.db.backends.mysql",
+        "NAME": os.getenv("MYSQLDATABASE", "db_new"),
+        "USER": os.getenv("MYSQLUSER", "root"),
+        "PASSWORD": os.getenv("MYSQLPASSWORD", "6423"),
+        "HOST": os.getenv("MYSQLHOST", "127.0.0.1"),  # TCP connection, never localhost
+        "PORT": os.getenv("MYSQLPORT", "3306"),
+        "OPTIONS": {
+            "charset": "utf8mb4",
+        },
     }
-else:
-    # ✅ Local MySQL (NO socket)
-    DATABASES = {
-        "default": {
-            "ENGINE": "django.db.backends.mysql",
-            "NAME": "db_new",
-            "USER": "root",
-            "PASSWORD": "6423",
-            "HOST": "127.0.0.1",  # 🔥 important
-            "PORT": "3306",
-            "OPTIONS": {
-                "charset": "utf8mb4",
-            },
-        }
-    }
+}
 
 # ==================================================
 # PASSWORD VALIDATION
@@ -167,10 +146,7 @@ EMAIL_USE_TLS = True
 EMAIL_PORT = 587
 EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER")
 EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")
-EMAIL_RECEIVING_USER = os.getenv(
-    "EMAIL_RECEIVING_USER",
-    ""
-).split(",")
+EMAIL_RECEIVING_USER = os.getenv("EMAIL_RECEIVING_USER", "").split(",")
 
 # ==================================================
 # DEFAULT FIELD
