@@ -18,8 +18,6 @@ DEBUG = os.getenv("DEBUG", "False") == "True"
 
 ALLOWED_HOSTS = [
     ".railway.app",
-    "localhost",
-    "127.0.0.1",
 ]
 
 CSRF_TRUSTED_ORIGINS = [
@@ -39,6 +37,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+
     "widget_tweaks",
     "school",
 ]
@@ -83,15 +82,15 @@ TEMPLATES = [
 ]
 
 # ==================================================
-# DATABASE (LOCAL + RAILWAY SAFE)
+# DATABASE (RAILWAY ONLY)
 # ==================================================
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.mysql",
-        "NAME": os.getenv("MYSQLDATABASE", "db_new"),
-        "USER": os.getenv("MYSQLUSER", "root"),
-        "PASSWORD": os.getenv("MYSQLPASSWORD", "6423"),
-        "HOST": os.getenv("MYSQLHOST", "127.0.0.1"),  # TCP connection, never localhost
+        "NAME": os.getenv("MYSQLDATABASE"),
+        "USER": os.getenv("MYSQLUSER"),
+        "PASSWORD": os.getenv("MYSQLPASSWORD"),
+        "HOST": os.getenv("MYSQLHOST"),  # e.g., mysql.railway.internal
         "PORT": os.getenv("MYSQLPORT", "3306"),
         "OPTIONS": {
             "charset": "utf8mb4",
@@ -123,7 +122,6 @@ USE_TZ = True
 STATIC_URL = "/static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
 STATICFILES_DIRS = [STATIC_DIR]
-
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 # ==================================================
